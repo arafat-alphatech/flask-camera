@@ -40,4 +40,13 @@ class BuildLJKResource(Resource):
 			path_zip = build(rows)
 			return send_file(path_zip, as_attachment=True)
 		return {"data": rows}
+
+	def post(self):
+		parser = reqparse.RequestParser()
+		parser.add_argument("data_uri",location='json')
+		args = parser.parse_args()
+
+		codes, answers = grading(args['data_uri'])
+
+		return {"codes": codes, "answer": answers}, 200 
 		

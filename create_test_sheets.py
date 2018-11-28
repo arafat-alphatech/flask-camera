@@ -23,10 +23,10 @@ def create_ljk(obj, path):
     qr_img = np.float32(qr_img)
 
     # put identity to sheet
-    cv2.putText(sheet, obj['nama'], (590, 403), cv2.FONT_HERSHEY_SIMPLEX, 1.8, (0, 0, 0), 3)
-    cv2.putText(sheet, obj['nama_kelas'], (590, 480), cv2.FONT_HERSHEY_SIMPLEX, 1.8, (0, 0, 0), 3)
-    cv2.putText(sheet, obj['nama_mapel'], (590, 550), cv2.FONT_HERSHEY_SIMPLEX, 1.8, (0, 0, 0), 3)
-    cv2.putText(sheet, obj['kode_soal'], (590, 620), cv2.FONT_HERSHEY_SIMPLEX, 1.8, (0, 0, 0), 3)
+    cv2.putText(sheet, obj['nama'], (590, 403), cv2.FONT_HERSHEY_DUPLEX, 1.8, (0, 0, 0), 3)
+    cv2.putText(sheet, obj['nama_kelas'], (590, 480), cv2.FONT_HERSHEY_DUPLEX, 1.8, (0, 0, 0), 3)
+    cv2.putText(sheet, obj['nama_mapel'], (590, 553), cv2.FONT_HERSHEY_DUPLEX, 1.8, (0, 0, 0), 3)
+    cv2.putText(sheet, obj['kode_soal'], (590, 630), cv2.FONT_HERSHEY_DUPLEX, 1.8, (0, 0, 0), 3)
 
     #crop and resize QR code
     size = 560
@@ -47,9 +47,7 @@ def create_ljk(obj, path):
     img_name = kode_soal + '_' + nama + ".png"
     # save ljk in directory
     cv2.imwrite(os.path.join( path, img_name) , sheet)
-    # cv2.imshow('hasil', cv2.resize(sheet, (0,0), fx=0.3, fy=0.3) )
-    # cv2.waitKey(0)
-
+    
 def build(data_siswa):
     path = data_siswa[0]['kode_soal'] + '-' + data_siswa[0]['nama_kelas'].replace(' ', '')
     path_zip = path + '.zip'
@@ -76,5 +74,28 @@ def build(data_siswa):
     ljk_zip.close()
     shutil.rmtree(path)
     return path_zip
+
+data_siswa = [
+    {
+    'id_paket_soal': 1,
+    'kode_soal': '8.BIND.23.11',
+    'nama_mapel': 'Bahasa Indonesia',
+    'id_kelas': 1,
+    'nama_kelas': 'VIII - 3',
+    'id_siswa': 1,
+    'nama': 'Much. Arafat A. M.',
+    'id_mapel': 1
+    }
+    ,{
+    'id_siswa': 2,
+    'id_kelas': 1,
+    'id_mapel': 1,
+    'id_paket_soal': 1,
+    'nama': 'Hasan Mubarok',
+    'nama_kelas': 'VIII - 3',
+    'nama_mapel': 'Bahasa Indonesia',
+    'kode_soal': '8.BIND.23.11'
+    }
+]
 
 # build(data_siswa)

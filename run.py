@@ -23,12 +23,11 @@ def grading(data_uri):
 	global mx 
 	global my
 
-	cv2.namedWindow('Original Image')
-	cv2.namedWindow('Scanned Paper')
+	# cv2.namedWindow('Original Image')
+	# cv2.namedWindow('Scanned Paper')
 
-	#ret, image = cap.read()
-	# cari ljk3
-	image = cv2.imread("ljk8.jpg")
+	image = data_uri_to_cv2_img(data_uri)
+	# image = cv2.imread("ljk8.jpg")
 	ratio = len(image[0]) / 500.0 #used for resizing the image
 	original_image = image.copy() #make a copy of the original image
 
@@ -94,7 +93,7 @@ def grading(data_uri):
 		#warp persepctive
 		paper = cv2.warpPerspective(original_image, M, (425, 550))
 		answers, paper, codes = ProcessPage(paper)
-		cv2.imshow("Scanned Paper", paper)
+		# cv2.imshow("Scanned Paper", paper)
 
 	#draw the contour
 	if biggestContour is not None:
@@ -106,8 +105,8 @@ def grading(data_uri):
 		else:
 			cv2.drawContours(image, [biggestContour], -1, (0, 0, 255), 3)
 
-	cv2.imshow("Original Image", cv2.resize(image, (0, 0), fx=0.7, fy=0.7))
-	cv2.waitKey(0)
+	# cv2.imshow("Original Image", cv2.resize(image, (0, 0), fx=0.7, fy=0.7))
+	# cv2.waitKey(0)
 	return codes, answers
 
 
