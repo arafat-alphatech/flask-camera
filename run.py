@@ -27,6 +27,8 @@ def grading(data_uri):
 	# cv2.namedWindow('Scanned Paper')
 
 	image = data_uri_to_cv2_img(data_uri)
+	cv2.imwrite("debug.jpg" , image)
+
 	# image = cv2.imread("test10.jpg")
 	ratio = len(image[0]) / 500.0 #used for resizing the image
 	original_image = image.copy() #make a copy of the original image
