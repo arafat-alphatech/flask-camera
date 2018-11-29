@@ -15,13 +15,14 @@ tags = [cv2.imread("markers2/top_left.jpg", cv2.IMREAD_GRAYSCALE),
         cv2.imread("markers2/bottom_right.jpg", cv2.IMREAD_GRAYSCALE)]
 
 #test sheet specific scaling constants
-scaling = [600.0, 842.0]
-columns = [[115.0 / scaling[0], 40 / scaling[1]], [444.0 / scaling[0], 40 / scaling[1]]]
-radius = 5.0 / scaling[0]
-spacing = [25.0 / scaling[0], 31.7 / scaling[1]]
+scaling = [599.0, 842.0]
+columns = [[115.0 / scaling[0], 40 / scaling[1]], [390.0 / scaling[0], 40 / scaling[1]]]
+radius = 8.0 / scaling[0]
+spacing = [38.0 / scaling[0], 31.7 / scaling[1]]
 
 def ProcessPage(paper):
     answers = '' #contains answers
+    codes = ''
     gray_paper = cv2.cvtColor(paper, cv2.COLOR_BGR2GRAY) #convert image to grayscale
     decodedObjects = pyzbar.decode(paper)
     # Print results
@@ -30,7 +31,7 @@ def ProcessPage(paper):
 
    
     corners = FindCorners(paper) #find the corners of the bubbled area
-
+    print(corners)
     #if we can't find the markers, return an error
     if corners is None:
         return [-1], paper, [-1]
@@ -40,15 +41,17 @@ def ProcessPage(paper):
 
     #iterate over test questions
     for k in range(0, 2): #columns
+        x_acc = 0.02
+        x_vel = 0
         for i in range(0, 25): #rows
             questions = []
             for j in range(0, 5): #answers
                 #coordinates of the answer bubble
-                x1 = int((columns[k][0] + j*spacing[0] - radius*1.5)*dimensions[0] + corners[0][0])
+                x1 = int((columns[k][0] + j*spacing[0] - radius*1.5)*dimensions[0] + corners[0][0] + x_vel)
                 y1 = int((columns[k][1] + i*spacing[1] - radius)*dimensions[1] + corners[0][1])
-                x2 = int((columns[k][0] + j*spacing[0] + radius*1.5)*dimensions[0] + corners[0][0])
+                x2 = int((columns[k][0] + j*spacing[0] + radius*1.5)*dimensions[0] + corners[0][0] + x_vel)
                 y2 = int((columns[k][1] + i*spacing[1] + radius)*dimensions[1] + corners[0][1])
-
+                x_vel += x_acc
                 #draw rectangles around bubbles
                 cv2.rectangle(paper, (x1, y1), (x2, y2), (255, 0, 0), thickness=1, lineType=8, shift=0)
 
@@ -59,7 +62,7 @@ def ProcessPage(paper):
             means = []
 
             #coordinates to draw detected answer
-            x1 = int((columns[k][0] - radius*8)*dimensions[0] + corners[0][0])
+            x1 = int((columns[k][0] - radius*8)*dimensions[0] + corners[0][0] - 10)
             y1 = int((columns[k][1] + i*spacing[1] + 0.5*radius)*dimensions[1] + corners[0][1])
 
             #calculate the image means for each bubble

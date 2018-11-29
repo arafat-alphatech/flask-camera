@@ -27,7 +27,7 @@ def grading(data_uri):
 	# cv2.namedWindow('Scanned Paper')
 
 	image = data_uri_to_cv2_img(data_uri)
-	# image = cv2.imread("ljk8.jpg")
+	# image = cv2.imread("test10.jpg")
 	ratio = len(image[0]) / 500.0 #used for resizing the image
 	original_image = image.copy() #make a copy of the original image
 
@@ -40,6 +40,7 @@ def grading(data_uri):
 	gray = cv2.bilateralFilter(gray, 11, 17, 17)
 	#find the edges
 	edged = cv2.Canny(gray, 85, 250)
+	cv2.imshow('edged', edged)
 	#find the contours
 	temp_img, contours, _ = cv2.findContours(edged.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
@@ -86,27 +87,28 @@ def grading(data_uri):
 	#original image giving us the maximum resolution
 	paper = []
 	points *= ratio
-	answers = 1
+	answers = ""
+	codes = ""
 	if biggestContour is not None:
 		#create persepctive matrix
 		M = cv2.getPerspectiveTransform(points, desired_points)
 		#warp persepctive
 		paper = cv2.warpPerspective(original_image, M, (425, 550))
 		answers, paper, codes = ProcessPage(paper)
-		# cv2.imshow("Scanned Paper", paper)
+		cv2.imshow("Scanned Paper", paper)
 
 	#draw the contour
 	if biggestContour is not None:
 		if answers != -1:
 			cv2.drawContours(image, [biggestContour], -1, (0, 255, 0), 3)
-			print (answers)
-			if codes is not None:
-				print (codes)
+			# print (answers)
+			# if codes is not None:
+			# 	print (codes)
 		else:
 			cv2.drawContours(image, [biggestContour], -1, (0, 0, 255), 3)
 
-	# cv2.imshow("Original Image", cv2.resize(image, (0, 0), fx=0.7, fy=0.7))
-	# cv2.waitKey(0)
+	cv2.imshow("Original Image", cv2.resize(image, (0, 0), fx=0.7, fy=0.7))
+	cv2.waitKey(0)
 	return codes, answers
 
 

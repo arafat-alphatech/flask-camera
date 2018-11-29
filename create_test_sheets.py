@@ -4,13 +4,13 @@ import qrcode
 import sys, zipfile, os, shutil
 
 #read the blank test sheet
-template = cv2.imread("template.jpg")
+template = cv2.imread("template3.jpg")
 #convert to grayscale
 template = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
 
 #scaling constants
-x_offset = 1580
-y_offset = 230
+x_offset = 1500
+y_offset = 170
 
 def create_ljk(obj, path):
     global template
@@ -23,10 +23,10 @@ def create_ljk(obj, path):
     qr_img = np.float32(qr_img)
 
     # put identity to sheet
-    cv2.putText(sheet, obj['nama'], (590, 403), cv2.FONT_HERSHEY_DUPLEX, 1.8, (0, 0, 0), 3)
-    cv2.putText(sheet, obj['nama_kelas'], (590, 480), cv2.FONT_HERSHEY_DUPLEX, 1.8, (0, 0, 0), 3)
-    cv2.putText(sheet, obj['nama_mapel'], (590, 553), cv2.FONT_HERSHEY_DUPLEX, 1.8, (0, 0, 0), 3)
-    cv2.putText(sheet, obj['kode_soal'], (590, 630), cv2.FONT_HERSHEY_DUPLEX, 1.8, (0, 0, 0), 3)
+    cv2.putText(sheet, obj['nama'], (590, 303), cv2.FONT_HERSHEY_DUPLEX, 1.8, (0, 0, 0), 3)
+    cv2.putText(sheet, obj['nama_kelas'], (590, 380), cv2.FONT_HERSHEY_DUPLEX, 1.8, (0, 0, 0), 3)
+    cv2.putText(sheet, obj['nama_mapel'], (590, 453), cv2.FONT_HERSHEY_DUPLEX, 1.8, (0, 0, 0), 3)
+    cv2.putText(sheet, obj['kode_soal'], (590, 530), cv2.FONT_HERSHEY_DUPLEX, 1.8, (0, 0, 0), 3)
 
     #crop and resize QR code
     size = 560
