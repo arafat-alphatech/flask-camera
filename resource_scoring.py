@@ -4,13 +4,19 @@ from api_field import *
 class Scoring_Resources(Resource):
     # Method untuk mengambil jawaban siswa berupa string, kemudian split per karakter, kemudian masuk ke tabel scoring
     @guru_required
-    def post(self):
+    def post(self, id_siswa, id_paket_soal, answer):
+        # input lewat parameter fungsi
+        args = {}
+        args["id_siswa"] = id_siswa
+        args["id_paket_soal"] = id_paket_soal
+        args["input"] = answer
+
         # input di body
-        parser = reqparse.RequestParser()
-        parser.add_argument("id_siswa",location='json',required=True)
-        parser.add_argument("id_paket_soal",location='json',required=True)
-        parser.add_argument("input",location='json',required=True)
-        args = parser.parse_args()
+        # parser = reqparse.RequestParser()
+        # parser.add_argument("id_siswa",location='json',required=True)
+        # parser.add_argument("id_paket_soal",location='json',required=True)
+        # parser.add_argument("input",location='json',required=True)
+        # args = parser.parse_args()
         # checking apakah id_siswa dan id_paket_soal sudah ada di tabel scoring? jika ya maka return pesan error, jika tidak maka proses dilanjutkan
         qry = Scoring.query
         qry = qry.filter_by(id_siswa = args['id_siswa'], id_paket_soal = args["id_paket_soal"]).first()

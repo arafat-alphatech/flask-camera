@@ -144,7 +144,7 @@ class Scoring(db.Model):
     siswa = relationship("Siswa",uselist=False, back_populates="scoring")
     id_paket_soal = db.Column(db.Integer, db.ForeignKey('paket_soal.id_paket_soal', ondelete="CASCADE"),nullable=False)
     paket_soal = relationship("PaketSoal", uselist=False,back_populates="scoring")
-    nilai = db.Column(db.Integer,nullable=False)
+    nilai = db.Column(db.Float,nullable=False)
 
 
 

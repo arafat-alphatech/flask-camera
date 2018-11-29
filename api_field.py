@@ -117,5 +117,5 @@ raw_data_field = {
 scoring_field = {
     'nis':fields.Integer,
     'nama':fields.String,
-    'nilai':fields.Integer
+    'nilai':fields.Float
 }

@@ -3,7 +3,7 @@ from api_field import *
 import sys, zipfile, os, shutil
 from run import grading
 from create_test_sheets import build
-
+import requests
 class BuildLJKResource(Resource):
 	# method untuk download zip file ljk yang sudah di generate
 	@guru_required
@@ -46,7 +46,87 @@ class BuildLJKResource(Resource):
 		parser.add_argument("data_uri",location='json')
 		args = parser.parse_args()
 
-		codes, answers = grading(args['data_uri'])
+		# codes, answer = grading(args['data_uri'])
+		# codes 2.1 (id_siswa.id_paket_soal)
+		codes = '16.6'
+		answer = 'AAAAEACACD'
 
-		return {"codes": codes, "answer": answers}, 200 
+		# opencv menemukan qrcode dan jawaban
+		if (codes != '' or codes != -1) and answer != '':
+			codes = codes.split('.')
+			id_siswa = codes[0]
+			id_paket_soal = codes[1]
+			data, http_code = self.doScoring(id_siswa, id_paket_soal, answer)
+
+			return {
+				"http_code": http_code,
+				"data": data
+			}, 200 
 		
+		# opencv tidak menemukan qecode dan jawaban
+		return {
+			"http_code": 404,
+			"data": {
+				"message": "Mohon scan ulang kembali"
+			}
+		}, 200 
+		
+	def doScoring(self, id_siswa, id_paket_soal, answer):
+		# input lewat parameter fungsi
+		args = {}
+		args["id_siswa"] = id_siswa
+		args["id_paket_soal"] = id_paket_soal
+		args["input"] = answer
+
+		# checking apakah id_siswa dan id_paket_soal sudah ada di tabel scoring? jika ya maka return pesan error, jika tidak maka proses dilanjutkan
+		qry = Scoring.query
+		qry = qry.filter_by(id_siswa = args['id_siswa'], id_paket_soal = args["id_paket_soal"]).first()
+		if qry is not None:
+			return {
+				"message":"Nilai sudah terdata sebelumnya, silahkan LJK yang lain"
+			},400
+		else:
+			# ambil kunci jawaban dari semua soal berdasarkan id_paket_soal yang dicari
+			answer = []
+			qry = Soal.query.filter_by(id_paket_soal=args['id_paket_soal'])
+			qry = qry.order_by(Soal.no_soal)
+			data_siswa = Siswa.query.filter_by(id_siswa = args["id_siswa"]).first()
+
+			for item in qry.all():
+				answer.append(item.jawaban)
+			# split string jawaban siswa kemudian dibandingkan dengan kunci jawaban apabila sama nilainya 1 jika tidak sama nilainya 0 semua dimasukkan ke tabel jawaban_ujian
+			output = []
+			nilai = []
+			index = 0
+			total_nilai = 0
+			for item in args['input']:
+				output.append(item)
+				if output[index] == answer[index]:
+					nilai.append(1)
+				else:
+					nilai.append(0)
+				new_jawaban_ujian = JawabanUjian(id_siswa = args['id_siswa'],
+												id_paket_soal = args['id_paket_soal'],
+												no_soal = index+1,
+												jawaban_siswa = output[index],
+												score_siswa = nilai[index] )
+				db.session.add(new_jawaban_ujian)
+				db.session.commit()
+				total_nilai += nilai[index]
+				index += 1
+			total_nilai = total_nilai / len(answer) * 100
+			# rekapan total nilai setiap siswa dimasukkan ke tabel scoring
+			new_scoring = Scoring(id_siswa = args['id_siswa'],
+								id_paket_soal = args['id_paket_soal'],
+								nilai = total_nilai)
+			db.session.add(new_scoring)
+			db.session.commit()
+			return {
+					'message': 'Koreksi jawaban berhasil',
+					'id_siswa':args['id_siswa'],
+					'nama_siswa': data_siswa.nama,
+					'id_paket_soal':args['id_paket_soal'],
+					'jawaban_siswa': output,
+					'kunci_jawaban': answer,
+					'total_nilai': total_nilai
+				}, 200

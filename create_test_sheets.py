@@ -17,7 +17,7 @@ def create_ljk(obj, path):
     global x_offset
     global y_offset
     sheet = template.copy()
-    name = str(obj['id_siswa']) + '.' + str(obj['id_kelas']) + '.' + str(obj['id_mapel']) + '.' + str(obj['id_paket_soal'])
+    name = str(obj['id_siswa']) + '.' + str(obj['id_paket_soal'])
     #make QR code
     qr_img = qrcode.make(name)
     qr_img = np.float32(qr_img)
@@ -96,6 +96,16 @@ data_siswa = [
     'nama_mapel': 'Bahasa Indonesia',
     'kode_soal': '8.BIND.23.11'
     }
+    ,{
+    'id_siswa': 3,
+    'id_kelas': 1,
+    'id_mapel': 1,
+    'id_paket_soal': 1,
+    'nama': 'Kobar GGWP',
+    'nama_kelas': 'VIII - 3',
+    'nama_mapel': 'Bahasa Indonesia',
+    'kode_soal': '8.BIND.23.11'
+    }
 ]
 
-# build(data_siswa)
+# build(data_siswa) # comment saat deploy
